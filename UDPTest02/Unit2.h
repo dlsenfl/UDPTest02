@@ -14,7 +14,7 @@
 #include <IdUDPServer.hpp>
 #include <IdUDPClient.hpp>
 //---------------------------------------------------------------------------
-struct TstHeader
+struct TstHeader                                 	//9바이트
 {
 	BYTE bySTX1;
 	BYTE bySTX2;
@@ -26,7 +26,7 @@ struct TstHeader
 };
 
 
-struct TstTail
+struct TstTail                                  	 //4바이트
 {
 	WORD wCRC;
 	BYTE byETX1;
@@ -34,7 +34,7 @@ struct TstTail
 };
 
 
-struct TstData06						// State
+struct TstData06						// State     //12바이트
 {
 	BYTE Door;							//	Open: 0x00, Close: 0x01, Unkown: 0x09
 	BYTE Power;							//  On: 0x00, 	Off: 0x01

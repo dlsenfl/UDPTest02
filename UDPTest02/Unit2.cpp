@@ -112,6 +112,7 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 	TstData06 stData06;
 	TstData07 stData07;
 
+	ZeroMemory(&stHeaderStore, sizeof(stHeaderStore));
 	stHeaderStore.bySTX1   = 0x10;
 	stHeaderStore.bySTX2   = 0x02;
 	stHeaderStore.byOpCode = 0x06;
@@ -161,8 +162,8 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 	if(iIndex == sizeof(stHeader)+stHeader.wDataLen+sizeof(stTail)){
 		mmShow->Lines->Add("응답데이터 출력");
 //		sTemp = TEncoding::GetEncoding(1251)->GetString(byBuf);
-//		sTemp =
-//		mmShow->Lines->Add(sTemp);
+		sTemp.sprintf(L"%x", byBuf);
+		mmShow->Lines->Add(sTemp);
 	}
 //	ZeroMemory(&stTail, sizeof(stTail));
 //	CopyMemory(&stTail, byBuf+iIndex, sizeof(stTail));
