@@ -66,7 +66,7 @@ void __fastcall TForm2::btRequestClick(TObject *Sender)
 			iIndex += sizeof(stData06);
 			break;
 		case 0x07:
-			TstData06 stData07;
+			TstData07 stData07;
 			ZeroMemory(&stData07, sizeof(stData07));
 			CopyMemory(byBuf+iIndex, &stData07, sizeof(stData07));
 			iIndex += sizeof(stData07);
@@ -103,7 +103,7 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 {
 	BYTE byBuf[1024];
 	ZeroMemory(byBuf, sizeof(byBuf));
-	BytesToRaw(AData, byBuf, AData.Length);
+	BytesToRaw(AData, byBuf, AData.Length);                                             // 데이터부분 이상한 값 전달??
 	UnicodeString sTemp;
 
 	TstHeader stHeader;
@@ -119,11 +119,9 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 	stHeaderStore.wDataLen = 0x0C;
 
 	int iIndex;
-
 	ZeroMemory(&stHeader, sizeof(stHeader));
 	CopyMemory(&stHeader, byBuf, sizeof(stHeader));
 	iIndex = sizeof(stHeader);
-
 	if(stHeader.byOpCode == 0x06){
 		if(stHeader.wDataLen > 0){
 			if(stHeader.wDataLen != sizeof(stData06)) return;
@@ -133,9 +131,11 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 			ZeroMemory(&stTail, sizeof(stTail));
 			CopyMemory(&stTail, byBuf+iIndex, sizeof(stTail));
 			iIndex += sizeof(stTail);
+
 		}else{
 			mmShow->Lines->Add("요청받음");
-			CopyMemory(byBuf, &stHeaderStore, sizeof(stHeaderStore));
+			CopyMemory(byBuf, &stHeaderStore, sizeof(stHeaderStore));                         //wDataLen 0xf ???
+//			ZeroMemory(&stData06, sizeof(stData06));
 			CopyMemory(byBuf+iIndex, &stData06, sizeof(stData06));
 			IdUDPServer1->SendBuffer(sHostIP, usHostPort, RawToBytes(&byBuf, sizeof(byBuf)));
 		}
@@ -151,6 +151,7 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 		}else{
 			mmShow->Lines->Add("요청받음");
 			CopyMemory(byBuf, &stHeaderStore, sizeof(stHeaderStore));
+//			ZeroMemory(&stData07, sizeof(stData07));
 			CopyMemory(byBuf+iIndex, &stData07, sizeof(stData07));
 			IdUDPServer1->SendBuffer(sHostIP, usHostPort, RawToBytes(&byBuf, sizeof(byBuf)));
 		}
@@ -161,8 +162,8 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 
 	if(iIndex == sizeof(stHeader)+stHeader.wDataLen+sizeof(stTail)){
 		mmShow->Lines->Add("응답데이터 출력");
-//		sTemp = TEncoding::GetEncoding(1251)->GetString(byBuf);
-		sTemp.sprintf(L"%x", byBuf);
+
+		sTemp.sprintf(L"%02X", byBuf);
 		mmShow->Lines->Add(sTemp);
 	}
 //	ZeroMemory(&stTail, sizeof(stTail));
