@@ -126,7 +126,10 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 	ZeroMemory(&stHeader, sizeof(stHeader));
 	CopyMemory(&stHeader, byBuf, sizeof(stHeader));
 	iIndex = sizeof(stHeader);
-	if(stHeader.byOpCode == 0x06){
+	if(stHeader.byOpCode == 0x05){
+	//
+
+	}else if(stHeader.byOpCode == 0x06){
 		if(stHeader.wDataLen > 0){    // 응답받은 데이터(byBuf)를 각각의 (로컬)헤더, 데이터, 테일부분에 저장
 			if(stHeader.wDataLen != sizeof(stData06)) return;
 			ZeroMemory(&stData06, sizeof(stData06));
@@ -158,12 +161,14 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 			CopyMemory(byBuf+iIndex, &stData07, sizeof(stData07));
 			IdUDPServer1->SendBuffer(sHostIP, usHostPort, RawToBytes(&byBuf, sizeof(byBuf)));
 		}
+	}else if(stHeader.byOpCode == 0x08){
 	}else if(stHeader.byOpCode == 0x09){
 	}else if(stHeader.byOpCode == 0x0A){
 	}else if(stHeader.byOpCode == 0x0B){
 	}
 
 
+	// 요청에 응답받은 데이터를 출력.
 	if(iIndex == sizeof(stHeader)+stHeader.wDataLen+sizeof(stTail)){
 		mmShow->Lines->Add("응답데이터 출력");
 		UnicodeString sData = "";
@@ -174,14 +179,6 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 		mmShow->Lines->Add(sData);
 
 	}
-//	ZeroMemory(&stTail, sizeof(stTail));
-//	CopyMemory(&stTail, byBuf+iIndex, sizeof(stTail));
-//	iIndex += sizeof(stTail);
-
-//	UnicodeString sTemp;
-//	sTemp = BytesToString(AData);
-//	mmShow->Lines->Add(sTemp);
-
 }
 //---------------------------------------------------------------------------
 
