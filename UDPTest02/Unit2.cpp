@@ -6,6 +6,63 @@
 #include "Unit2.h"
 //---------------------------------------------------------------------------
 #pragma package(smart_init)
+#pragma link "cxContainer"
+#pragma link "cxControls"
+#pragma link "cxEdit"
+#pragma link "cxGraphics"
+#pragma link "cxLookAndFeelPainters"
+#pragma link "cxLookAndFeels"
+#pragma link "cxTextEdit"
+#pragma link "dxSkinBlack"
+#pragma link "dxSkinBlue"
+#pragma link "dxSkinBlueprint"
+#pragma link "dxSkinCaramel"
+#pragma link "dxSkinCoffee"
+#pragma link "dxSkinDarkRoom"
+#pragma link "dxSkinDarkSide"
+#pragma link "dxSkinDevExpressDarkStyle"
+#pragma link "dxSkinDevExpressStyle"
+#pragma link "dxSkinFoggy"
+#pragma link "dxSkinGlassOceans"
+#pragma link "dxSkinHighContrast"
+#pragma link "dxSkiniMaginary"
+#pragma link "dxSkinLilian"
+#pragma link "dxSkinLiquidSky"
+#pragma link "dxSkinLondonLiquidSky"
+#pragma link "dxSkinMcSkin"
+#pragma link "dxSkinMetropolis"
+#pragma link "dxSkinMetropolisDark"
+#pragma link "dxSkinMoneyTwins"
+#pragma link "dxSkinOffice2007Black"
+#pragma link "dxSkinOffice2007Blue"
+#pragma link "dxSkinOffice2007Green"
+#pragma link "dxSkinOffice2007Pink"
+#pragma link "dxSkinOffice2007Silver"
+#pragma link "dxSkinOffice2010Black"
+#pragma link "dxSkinOffice2010Blue"
+#pragma link "dxSkinOffice2010Silver"
+#pragma link "dxSkinOffice2013DarkGray"
+#pragma link "dxSkinOffice2013LightGray"
+#pragma link "dxSkinOffice2013White"
+#pragma link "dxSkinPumpkin"
+#pragma link "dxSkinsCore"
+#pragma link "dxSkinsDefaultPainters"
+#pragma link "dxSkinSeven"
+#pragma link "dxSkinSevenClassic"
+#pragma link "dxSkinSharp"
+#pragma link "dxSkinSharpPlus"
+#pragma link "dxSkinSilver"
+#pragma link "dxSkinSpringTime"
+#pragma link "dxSkinStardust"
+#pragma link "dxSkinSummer2008"
+#pragma link "dxSkinTheAsphaltWorld"
+#pragma link "dxSkinValentine"
+#pragma link "dxSkinVisualStudio2013Blue"
+#pragma link "dxSkinVisualStudio2013Dark"
+#pragma link "dxSkinVisualStudio2013Light"
+#pragma link "dxSkinVS2010"
+#pragma link "dxSkinWhiteprint"
+#pragma link "dxSkinXmas2008Blue"
 #pragma resource "*.dfm"
 TForm2 *Form2;
 //---------------------------------------------------------------------------
@@ -119,8 +176,7 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 	ZeroMemory(&stHeaderStore, sizeof(stHeaderStore));
 	stHeaderStore.bySTX1   = 0x10;
 	stHeaderStore.bySTX2   = 0x02;
-	stHeaderStore.byOpCode = 0x06;
-	stHeaderStore.wDataLen = 0x0C;
+
 
 	int iIndex;
 	ZeroMemory(&stHeader, sizeof(stHeader));
@@ -140,6 +196,8 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 			iIndex += sizeof(stTail);
 		}else{
 			mmShow->Lines->Add("요청받음");
+			stHeaderStore.byOpCode = 0x06;
+			stHeaderStore.wDataLen = sizeof(stData06);
 			CopyMemory(byBuf, &stHeaderStore, sizeof(stHeaderStore)); //wDataLen 값이 0xf ??? , 저장되는 16진수값은 0x0c
 //			ZeroMemory(&stData06, sizeof(stData06));
 			CopyMemory(byBuf+iIndex, &stData06, sizeof(stData06));
@@ -156,6 +214,8 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 			iIndex += sizeof(stTail);
 		}else{
 			mmShow->Lines->Add("요청받음");
+			stHeaderStore.byOpCode = 0x07;
+			stHeaderStore.wDataLen = sizeof(stData07);
 			CopyMemory(byBuf, &stHeaderStore, sizeof(stHeaderStore));
 //			ZeroMemory(&stData07, sizeof(stData07));
 			CopyMemory(byBuf+iIndex, &stData07, sizeof(stData07));
@@ -182,3 +242,135 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 }
 //---------------------------------------------------------------------------
 
+void __fastcall TForm2::btCtrlClick(TObject *Sender)
+{
+
+
+	UnicodeString sRdTest;
+	for(int i=0; i<rdCtrlData->Items->Count; i++){
+		sRdTest = rdCtrlData->Items->Strings[i];
+		ShowMessage(sRdTest);
+	}
+
+
+	return;
+
+	BYTE byBuf[1024];
+	TstHeader stHeader;
+	TstTail	  stTail;
+	int 	  iIndex;
+
+	ZeroMemory(byBuf, sizeof(byBuf));
+	ZeroMemory(&stHeader, sizeof(stHeader));
+	ZeroMemory(&stTail, sizeof(stTail));
+
+	stHeader.bySTX1   = 0x10;
+	stHeader.bySTX2   = 0x02;
+	stHeader.byOpCode = 0x05;
+
+	TstData05	stData05;
+	TstData05D1 stData05D1;
+	TstData05D3 stData05D3;
+	TstData05D4 stData05D4;
+	ZeroMemory(&stData05, sizeof(stData05));
+	AnsiString sTime;
+	switch(rdCtrlData->ItemIndex){		//제어코드에 따른 제어데이터를 선택
+		case 0:		//전광판 모듈전원제어( 0: 꺼짐, 1:켜짐, 2:자동)
+			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);		// 제어코드(1BYTE) + 제어데이터(nBYTE)
+			stData05.byCtrlCode = 0x30;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+		case 1:		//제어기 리셋트
+			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
+			stData05.byCtrlCode = 0x31;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+		case 2:		//통신시도 획수(0x01~0x09)
+			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
+			stData05.byCtrlCode = 0x32;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+		case 3:		//제어기 시간셋트(시간설정 데이터 사용)
+			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D4);
+			stData05.byCtrlCode = 0x33;
+			ZeroMemory(&stData05D4, sizeof(stData05D4));
+//			sTime = edData->Text;
+			sTime = Now().FormatString("yyyymmddhhnnss");
+			CopyMemory(&stData05D4, sTime.c_str(), sizeof(stData05D4));
+			break;
+		case  4:	//운영시간(VMS운영시간 설정)
+			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D3);
+			stData05.byCtrlCode = 0x34;
+			ZeroMemory(&stData05D3, sizeof(stData05D3));
+			sTime = edData->Text;
+			CopyMemory(&stData05D3, sTime.c_str(), sizeof(stData05D3));
+			break;
+		case  5: break;
+		case  6: break;
+		case  7: break;
+		case  8: break;
+		case  9: break;
+		case 10: break;
+		case 11: break;
+	}
+
+	stTail.byETX1	= 0x10;
+	stTail.byETX2	= 0x03;
+
+	CopyMemory(byBuf, &stHeader, sizeof(stHeader));
+	iIndex = sizeof(stHeader);
+
+	switch(rdCtrlData->ItemIndex){
+		case  0 :                    //
+		case  1 :                    //
+		case  2 :                    // case 0, 1, 2인 경우 전부 같은 코드 실행.
+			CopyMemory(byBuf + iIndex, &stData05, sizeof(stData05));		// 제어코드 부분 복사
+			iIndex += sizeof(stData05);
+			CopyMemory(byBuf + iIndex, &stData05D1, sizeof(stData05D1));    // 제어데이터 부분 복사
+			iIndex += sizeof(stData05D1);
+			break;
+		case  3 :
+			CopyMemory(byBuf+iIndex, &stData05, sizeof(stData05));
+			iIndex += sizeof(stData05);
+			CopyMemory(byBuf+iIndex, &stData05D4, sizeof(stData05D4));
+			iIndex += sizeof(stData05D4);
+			break;
+		case  4 :
+			CopyMemory(byBuf+iIndex, &stData05, sizeof(stData05));
+			iIndex += sizeof(stData05);
+			CopyMemory(byBuf+iIndex, &stData05D3, sizeof(stData05D3));
+			iIndex += sizeof(stData05D3);
+			break;
+		case  6 : break;
+		case  7 : break;
+		case  8 : break;
+		case  9 : break;
+		case 10 : break;
+		case 11 : break;
+		case 12 : break;
+		case 13 : break;
+	}
+
+	CopyMemory(byBuf+iIndex, &stTail, sizeof(stTail));
+	iIndex += sizeof(stTail);
+
+	if(iIndex == sizeof(stHeader)+stHeader.wDataLen+sizeof(stTail)){
+		UnicodeString sData = "";
+		UnicodeString sTemp;
+
+		for(int i=0; i<iIndex; i++){
+			sData += sTemp.sprintf(L"%02X ", byBuf[i]);
+		}
+		mmShow->Lines->Add(sData);
+	}
+
+
+
+
+
+
+}
+//---------------------------------------------------------------------------

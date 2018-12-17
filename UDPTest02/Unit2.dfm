@@ -2,8 +2,8 @@ object Form2: TForm2
   Left = 0
   Top = 0
   Caption = 'Form2'
-  ClientHeight = 299
-  ClientWidth = 635
+  ClientHeight = 596
+  ClientWidth = 835
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -63,7 +63,7 @@ object Form2: TForm2
     Left = 16
     Top = 16
     Width = 305
-    Height = 233
+    Height = 545
     TabOrder = 2
   end
   object btRequest: TButton
@@ -115,11 +115,47 @@ object Form2: TForm2
     TabOrder = 6
     Text = '127.0.0.1'
   end
+  object rdCtrlData: TRadioGroup
+    Left = 354
+    Top = 184
+    Width = 185
+    Height = 377
+    Caption = 'rdCtrlData'
+    Items.Strings = (
+      '30 '#51204#44305#54032' '#47784#46280#51204#50896#51228#50612
+      '31 '#51228#50612#44592' '#47532#49483
+      '32 '#53685#49888#49884#46020' '#54925#49688
+      '33 '#51228#50612#44592' '#49884#44036#49483#53944
+      '34 '#50868#50689#49884#44036
+      '35 '#51216#47736#49884#44036' '#51452#44592
+      '36 '#46356#54260#53944' '#49884#45208#47532#50724' '#46041#51089#49884#44036
+      '37 '#48157#44592#51228#50612
+      '38 Fan '#51228#50612
+      '39 Heater '#51228#50612
+      '40 '#46020#54805#49885' '#51204#46321#51228#50612
+      '41 LED '#51204#50896#51228#50612)
+    TabOrder = 7
+  end
+  object edData: TcxTextEdit
+    Left = 545
+    Top = 192
+    TabOrder = 8
+    Width = 240
+  end
+  object btCtrl: TButton
+    Left = 545
+    Top = 256
+    Width = 75
+    Height = 25
+    Caption = #51228#50612
+    TabOrder = 9
+    OnClick = btCtrlClick
+  end
   object IdUDPServer1: TIdUDPServer
     Bindings = <>
     DefaultPort = 0
     OnUDPRead = IdUDPServer1UDPRead
-    Left = 584
-    Top = 256
+    Left = 576
+    Top = 72
   end
 end
