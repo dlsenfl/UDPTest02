@@ -246,14 +246,14 @@ void __fastcall TForm2::btCtrlClick(TObject *Sender)
 {
 
 
-	UnicodeString sRdTest;
-	for(int i=0; i<rdCtrlData->Items->Count; i++){
-		sRdTest = rdCtrlData->Items->Strings[i];
-		ShowMessage(sRdTest);
-	}
-
-
-	return;
+//	UnicodeString sRdTest;
+//	for(int i=0; i<rdCtrlData->Items->Count; i++){
+//		sRdTest = rdCtrlData->Items->Strings[i];
+//		ShowMessage(sRdTest);
+//	}
+//
+//
+//	return;
 
 	BYTE byBuf[1024];
 	TstHeader stHeader;
@@ -268,32 +268,34 @@ void __fastcall TForm2::btCtrlClick(TObject *Sender)
 	stHeader.bySTX2   = 0x02;
 	stHeader.byOpCode = 0x05;
 
+
 	TstData05	stData05;
 	TstData05D1 stData05D1;
+	TstData05D2 stData05D2;
 	TstData05D3 stData05D3;
 	TstData05D4 stData05D4;
 	ZeroMemory(&stData05, sizeof(stData05));
 	AnsiString sTime;
 	switch(rdCtrlData->ItemIndex){		//제어코드에 따른 제어데이터를 선택
-		case 0:		//전광판 모듈전원제어( 0: 꺼짐, 1:켜짐, 2:자동)
+		case  0:		//전광판 모듈전원제어( 0: 꺼짐, 1:켜짐, 2:자동)
 			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);		// 제어코드(1BYTE) + 제어데이터(nBYTE)
 			stData05.byCtrlCode = 0x30;
 			ZeroMemory(&stData05D1, sizeof(stData05D1));
 			stData05D1.byCtrlData = StrToInt(edData->Text);
 			break;
-		case 1:		//제어기 리셋트
+		case  1:		//제어기 리셋트
 			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
 			stData05.byCtrlCode = 0x31;
 			ZeroMemory(&stData05D1, sizeof(stData05D1));
 			stData05D1.byCtrlData = StrToInt(edData->Text);
 			break;
-		case 2:		//통신시도 획수(0x01~0x09)
+		case  2:		//통신시도 획수(0x01~0x09)
 			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
 			stData05.byCtrlCode = 0x32;
 			ZeroMemory(&stData05D1, sizeof(stData05D1));
 			stData05D1.byCtrlData = StrToInt(edData->Text);
 			break;
-		case 3:		//제어기 시간셋트(시간설정 데이터 사용)
+		case  3:		//제어기 시간셋트(시간설정 데이터 사용)
 			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D4);
 			stData05.byCtrlCode = 0x33;
 			ZeroMemory(&stData05D4, sizeof(stData05D4));
@@ -308,25 +310,79 @@ void __fastcall TForm2::btCtrlClick(TObject *Sender)
 			sTime = edData->Text;
 			CopyMemory(&stData05D3, sTime.c_str(), sizeof(stData05D3));
 			break;
-		case  5: break;
-		case  6: break;
-		case  7: break;
-		case  8: break;
-		case  9: break;
-		case 10: break;
-		case 11: break;
-	}
+		case  5:
+			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
+			stData05.byCtrlCode = 0x35;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+		case  6:
+			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
+			stData05.byCtrlCode = 0x36;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+		case  7:
+			// , 를 구분자로 (제어값+밝기) 를 나누어 바이트 단위로 입력.
+			TStringList *pTemp;
+			pTemp = new TStringList();
+			pTemp->CommaText = edData->Text;
 
+			stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D2);
+			stData05.byCtrlCode = 0x37;
+			ZeroMemory(&stData05D2, sizeof(stData05D2));
+			if(StrToInt(pTemp->Strings[0]) == 0){      // 수동(0x00)일 경우
+				for(int i=0; i<pTemp->Count; i++){
+					stData05D2.byCtrlData[i] = StrToInt(pTemp->Strings[i]);
+				}
+			}else{                                     // 자동(0x01)일 경우
+				stData05D2.byCtrlData[0] = 1;
+				stData05D2.byCtrlData[pTemp->Count-1] = 0;
+			}
+			delete pTemp;
+			break;
+		case  8:
+            stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
+			stData05.byCtrlCode = 0x36;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+		case  9:
+            stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
+			stData05.byCtrlCode = 0x36;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+		case 10:
+            stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
+			stData05.byCtrlCode = 0x36;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+		case 11:
+            stHeader.wDataLen = sizeof(stData05) + sizeof(stData05D1);
+			stData05.byCtrlCode = 0x36;
+			ZeroMemory(&stData05D1, sizeof(stData05D1));
+			stData05D1.byCtrlData = StrToInt(edData->Text);
+			break;
+	}
 	stTail.byETX1	= 0x10;
 	stTail.byETX2	= 0x03;
 
 	CopyMemory(byBuf, &stHeader, sizeof(stHeader));
 	iIndex = sizeof(stHeader);
 
+
 	switch(rdCtrlData->ItemIndex){
 		case  0 :                    //
 		case  1 :                    //
 		case  2 :                    // case 0, 1, 2인 경우 전부 같은 코드 실행.
+		case  5 :
+		case  6 :
+        case  8 :
+        case  9 :
+        case 10 :
+        case 11 :
 			CopyMemory(byBuf + iIndex, &stData05, sizeof(stData05));		// 제어코드 부분 복사
 			iIndex += sizeof(stData05);
 			CopyMemory(byBuf + iIndex, &stData05D1, sizeof(stData05D1));    // 제어데이터 부분 복사
@@ -344,14 +400,23 @@ void __fastcall TForm2::btCtrlClick(TObject *Sender)
 			CopyMemory(byBuf+iIndex, &stData05D3, sizeof(stData05D3));
 			iIndex += sizeof(stData05D3);
 			break;
-		case  6 : break;
-		case  7 : break;
-		case  8 : break;
-		case  9 : break;
-		case 10 : break;
-		case 11 : break;
-		case 12 : break;
-		case 13 : break;
+//		case  5 :
+//			CopyMemory(byBuf+iIndex, &stData05, sizeof(stData05));
+//			iIndex += sizeof(stData05);
+//			CopyMemory(byBuf+iIndex, &stData05D1, sizeof(stData05D1));
+//			iIndex += sizeof(stData05D1);
+//			break;
+		case  7 :
+			CopyMemory(byBuf+iIndex, &stData05, sizeof(stData05));
+			iIndex += sizeof(stData05);
+			CopyMemory(byBuf+iIndex, &stData05D2, sizeof(stData05D2));
+			iIndex += sizeof(stData05D2);
+			break;
+
+
+
+
+
 	}
 
 	CopyMemory(byBuf+iIndex, &stTail, sizeof(stTail));
