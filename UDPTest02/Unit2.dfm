@@ -67,21 +67,13 @@ object Form2: TForm2
     TabOrder = 2
   end
   object btRequest: TButton
-    Left = 350
-    Top = 128
+    Left = 455
+    Top = 491
     Width = 75
     Height = 25
     Caption = #50836#52397
     TabOrder = 3
     OnClick = btRequestClick
-  end
-  object btReply: TButton
-    Left = 464
-    Top = 128
-    Width = 75
-    Height = 25
-    Caption = #51025#45813
-    TabOrder = 4
   end
   object btStart: TButton
     Left = 536
@@ -89,7 +81,7 @@ object Form2: TForm2
     Width = 75
     Height = 25
     Caption = #49884#51089
-    TabOrder = 5
+    TabOrder = 4
     OnClick = btStartClick
   end
   object edClientPort: TEdit
@@ -112,15 +104,15 @@ object Form2: TForm2
     Top = 16
     Width = 121
     Height = 21
-    TabOrder = 6
+    TabOrder = 5
     Text = '127.0.0.1'
   end
   object rdCtrlData: TRadioGroup
-    Left = 354
-    Top = 184
+    Left = 567
+    Top = 108
     Width = 185
     Height = 377
-    Caption = 'rdCtrlData'
+    Caption = '05'#51228#50612#45936#51060#53552
     Items.Strings = (
       '30 '#51204#44305#54032' '#47784#46280#51204#50896#51228#50612
       '31 '#51228#50612#44592' '#47532#49483
@@ -134,28 +126,40 @@ object Form2: TForm2
       '39 Heater '#51228#50612
       '40 '#46020#54805#49885' '#51204#46321#51228#50612
       '41 LED '#51204#50896#51228#50612)
-    TabOrder = 7
+    TabOrder = 6
   end
   object edData: TcxTextEdit
-    Left = 545
-    Top = 192
-    TabOrder = 8
-    Width = 240
+    Left = 567
+    Top = 491
+    TabOrder = 7
+    OnKeyPress = edDataKeyPress
+    Width = 185
   end
   object btCtrl: TButton
-    Left = 545
-    Top = 256
+    Left = 758
+    Top = 487
     Width = 75
     Height = 25
     Caption = #51228#50612
-    TabOrder = 9
+    TabOrder = 8
     OnClick = btCtrlClick
+  end
+  object rdOpCodeNo: TRadioGroup
+    Left = 345
+    Top = 108
+    Width = 185
+    Height = 377
+    Caption = 'OpCode'
+    Items.Strings = (
+      '06 '#49345#53468
+      '07 '#47196#52972#49345#53468)
+    TabOrder = 9
   end
   object IdUDPServer1: TIdUDPServer
     Bindings = <>
     DefaultPort = 0
     OnUDPRead = IdUDPServer1UDPRead
-    Left = 576
-    Top = 72
+    Left = 776
+    Top = 24
   end
 end

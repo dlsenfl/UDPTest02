@@ -164,7 +164,6 @@ __published:	// IDE-managed Components
 	TMemo *mmShow;
 	TButton *btRequest;
 	TIdUDPServer *IdUDPServer1;
-	TButton *btReply;
 	TButton *btStart;
 	TEdit *edClientPort;
 	TLabel *Label1;
@@ -175,12 +174,14 @@ __published:	// IDE-managed Components
 	TRadioGroup *rdCtrlData;
 	TcxTextEdit *edData;
 	TButton *btCtrl;
+	TRadioGroup *rdOpCodeNo;
 	void __fastcall btStartClick(TObject *Sender);
 	void __fastcall btRequestClick(TObject *Sender);
 	void __fastcall edClientPortKeyPress(TObject *Sender, System::WideChar &Key);
 	void __fastcall IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const TIdBytes AData,
           TIdSocketHandle *ABinding);
 	void __fastcall btCtrlClick(TObject *Sender);
+	void __fastcall edDataKeyPress(TObject *Sender, System::WideChar &Key);
 private:	// User declarations
 	UnicodeString  sHostIP;
 	unsigned short usHostPort;

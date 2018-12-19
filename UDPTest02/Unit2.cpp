@@ -98,6 +98,12 @@ void __fastcall TForm2::btRequestClick(TObject *Sender)
 	TstHeader stHeader;
 	TstTail stTail;
 	int iIndex  = 0;
+	//======= OpCode 추출=======
+	int iOpCode = 0;
+	UnicodeString sTemp;
+	UnicodeString sTemp2;
+	sTemp = rdOpCodeNo->Items->Strings[rdOpCodeNo->ItemIndex].SubString(0, 2);
+	iOpCode = StrToInt(sTemp);
 	//======= 메모리 초기화=======
 	ZeroMemory(byBuf, sizeof(byBuf));
 	ZeroMemory(&stHeader, sizeof(stHeader));
@@ -105,7 +111,8 @@ void __fastcall TForm2::btRequestClick(TObject *Sender)
 
 	stHeader.bySTX1   = 0x10;
 	stHeader.bySTX2   = 0x02;
-	stHeader.byOpCode = 0x06;
+//	stHeader.byOpCode = 0x06;
+	stHeader.byOpCode = iOpCode;
 	stHeader.wDataLen = 0x00;
 
 
@@ -182,9 +189,23 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 	ZeroMemory(&stHeader, sizeof(stHeader));
 	CopyMemory(&stHeader, byBuf, sizeof(stHeader));
 	iIndex = sizeof(stHeader);
-	if(stHeader.byOpCode == 0x05){
-	//
 
+//======= OpCode에따른 데이터 처리=======
+	if(stHeader.byOpCode == 0x01){
+	}else if(stHeader.byOpCode == 0x02){
+	}else if(stHeader.byOpCode == 0x03){
+	}else if(stHeader.byOpCode == 0x04){
+	}else if(stHeader.byOpCode == 0x05){
+		mmShow->Lines->Add("제어데이터 출력");
+		iIndex += stHeader.wDataLen + sizeof(stTail);
+		UnicodeString sData = "";
+		UnicodeString sTemp;
+
+		for(int i=0; i<iIndex; i++){
+			sData += sTemp.sprintf(L"%02X ", byBuf[i]);
+		}
+		mmShow->Lines->Add(sData);
+		return;
 	}else if(stHeader.byOpCode == 0x06){
 		if(stHeader.wDataLen > 0){    // 응답받은 데이터(byBuf)를 각각의 (로컬)헤더, 데이터, 테일부분에 저장
 			if(stHeader.wDataLen != sizeof(stData06)) return;
@@ -365,6 +386,9 @@ void __fastcall TForm2::btCtrlClick(TObject *Sender)
 			ZeroMemory(&stData05D1, sizeof(stData05D1));
 			stData05D1.byCtrlData = StrToInt(edData->Text);
 			break;
+		default :
+			ShowMessage("Error");
+			break;
 	}
 	stTail.byETX1	= 0x10;
 	stTail.byETX2	= 0x03;
@@ -400,12 +424,6 @@ void __fastcall TForm2::btCtrlClick(TObject *Sender)
 			CopyMemory(byBuf+iIndex, &stData05D3, sizeof(stData05D3));
 			iIndex += sizeof(stData05D3);
 			break;
-//		case  5 :
-//			CopyMemory(byBuf+iIndex, &stData05, sizeof(stData05));
-//			iIndex += sizeof(stData05);
-//			CopyMemory(byBuf+iIndex, &stData05D1, sizeof(stData05D1));
-//			iIndex += sizeof(stData05D1);
-//			break;
 		case  7 :
 			CopyMemory(byBuf+iIndex, &stData05, sizeof(stData05));
 			iIndex += sizeof(stData05);
@@ -422,20 +440,29 @@ void __fastcall TForm2::btCtrlClick(TObject *Sender)
 	CopyMemory(byBuf+iIndex, &stTail, sizeof(stTail));
 	iIndex += sizeof(stTail);
 
+//	테스트 출력
+//	if(iIndex == sizeof(stHeader)+stHeader.wDataLen+sizeof(stTail)){
+//		UnicodeString sData = "";
+//		UnicodeString sTemp;
+//
+//		for(int i=0; i<iIndex; i++){
+//			sData += sTemp.sprintf(L"%02X ", byBuf[i]);
+//		}
+//		mmShow->Lines->Add(sData);
+//	}
 	if(iIndex == sizeof(stHeader)+stHeader.wDataLen+sizeof(stTail)){
-		UnicodeString sData = "";
-		UnicodeString sTemp;
-
-		for(int i=0; i<iIndex; i++){
-			sData += sTemp.sprintf(L"%02X ", byBuf[i]);
-		}
-		mmShow->Lines->Add(sData);
+		 IdUDPServer1->SendBuffer(sHostIP, usHostPort, RawToBytes(&byBuf, sizeof(byBuf)));
 	}
-
-
-
-
-
 
 }
 //---------------------------------------------------------------------------
+
+void __fastcall TForm2::edDataKeyPress(TObject *Sender, System::WideChar &Key)
+
+{
+	if(Key == VK_RETURN){
+		btCtrlClick(NULL);
+	}
+}
+//---------------------------------------------------------------------------
+
