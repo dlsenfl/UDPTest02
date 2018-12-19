@@ -196,16 +196,27 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 	}else if(stHeader.byOpCode == 0x03){
 	}else if(stHeader.byOpCode == 0x04){
 	}else if(stHeader.byOpCode == 0x05){
-		mmShow->Lines->Add("제어데이터 출력");
-		iIndex += stHeader.wDataLen + sizeof(stTail);
-		UnicodeString sData = "";
-		UnicodeString sTemp;
+		if(stHeader.wDataLen > 0){
+			mmShow->Lines->Add("제어데이터 출력");
+			iIndex += stHeader.wDataLen + sizeof(stTail);
+			UnicodeString sData = "";
+			UnicodeString sTemp;
 
-		for(int i=0; i<iIndex; i++){
-			sData += sTemp.sprintf(L"%02X ", byBuf[i]);
+			for(int i=0; i<iIndex; i++){
+				sData += sTemp.sprintf(L"%02X ", byBuf[i]);
+			}
+			mmShow->Lines->Add(sData);
+			stHeader.wDataLen = 0;
+			ZeroMemory(byBuf, sizeof(byBuf));
+			CopyMemory(byBuf, &stHeader, sizeof(stHeader));
+			IdUDPServer1->SendBuffer(sHostIP, usHostPort,RawToBytes(byBuf, sizeof(byBuf)));
+			return;
+		}else{
+			mmShow->Lines->Add("ACK");    // 수신응답
+			return;
 		}
-		mmShow->Lines->Add(sData);
-		return;
+
+
 	}else if(stHeader.byOpCode == 0x06){
 		if(stHeader.wDataLen > 0){    // 응답받은 데이터(byBuf)를 각각의 (로컬)헤더, 데이터, 테일부분에 저장
 			if(stHeader.wDataLen != sizeof(stData06)) return;

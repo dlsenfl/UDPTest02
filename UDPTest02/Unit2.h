@@ -83,7 +83,6 @@ struct TstHeader                                 	//9바이트
 	WORD wDataLen;
 };
 
-
 struct TstTail                                  	 //4바이트
 {
 	WORD wCRC;
@@ -91,6 +90,61 @@ struct TstTail                                  	 //4바이트
 	BYTE byETX2;
 };
 
+//---------------------------------------------------------------------------
+struct TstFormHeader
+{
+	BYTE byFormNo;
+	BYTE byAllFormCount;
+	BYTE byDisplayTime;
+	BYTE byDisplayType;
+	BYTE byBackColor;
+	BYTE byObjectCount;
+};
+
+struct TstObjectHeader
+{
+	BYTE byObjectKind;
+	BYTE byObjectSize[2];
+	BYTE byBlinkOnOff;
+	BYTE byXposition[2];
+	BYTE byYposition[2];
+	BYTE byStringBackCol;
+};
+
+struct TstObjectString
+{
+	BYTE byFontColor;
+	BYTE byFontSize;
+	BYTE byFontKind;
+	BYTE byFontBold;
+	BYTE byEtc;
+	BYTE *byString;
+};
+
+struct TstObjectBitMap
+{
+	BYTE byBitMapWidth[2];
+	BYTE byBitMapHeight[2];
+	BYTE byBitMapType;
+	BYTE byEtc;
+	BYTE *byBitMapData;
+};
+
+struct TstObjectBitMapId
+{
+	BYTE byBitMapIdWidth[2];
+	BYTE byBitMapIdHeight[2];
+	BYTE byBitMapIdType;
+	BYTE *byBitMapId;
+};
+
+struct TstData01
+{
+	TstFormHeader stFormHeader;
+	TstObjectHeader stObjectHeader;
+};
+
+//---------------------------------------------------------------------------
 struct TstData05
 {
 	BYTE byCtrlCode;
@@ -116,7 +170,7 @@ struct TstData05D4
 	char byCtrlData[14];
 };
 
-
+//---------------------------------------------------------------------------
 struct TstData06						// State     //12바이트
 {
 	BYTE Door;							//	Open: 0x00, Close: 0x01, Unkown: 0x09
@@ -133,6 +187,7 @@ struct TstData06						// State     //12바이트
 	BYTE Etc2;							// 	기타2
 };
 
+//---------------------------------------------------------------------------
 struct TstData07                        // LocalState
 {
 	BYTE PowerMode;						//	Off: 0x00,  On: 0x01, Auto: 0x02
