@@ -101,16 +101,6 @@ struct TstFormHeader
 	BYTE byObjectCount;
 };
 
-struct TstObjectHeader
-{
-	BYTE byObjectKind;
-	BYTE byObjectSize[2];
-	BYTE byBlinkOnOff;
-	BYTE byXposition[2];
-	BYTE byYposition[2];
-	BYTE byStringBackCol;
-};
-
 struct TstObjectString
 {
 	BYTE byFontColor;
@@ -138,10 +128,23 @@ struct TstObjectBitMapId
 	BYTE *byBitMapId;
 };
 
+struct TstObjectHeader
+{
+	BYTE byObjectKind;
+	BYTE byObjectSize[2];
+	BYTE byBlinkOnOff;
+	BYTE byXposition[2];
+	BYTE byYposition[2];
+	BYTE byStringBackCol;
+	TstObjectString stObjectString;
+	TstObjectBitMap stObjectBitMap;
+	TstObjectBitMapId stObjectBitMapId;
+};
+
 struct TstData01
 {
 	TstFormHeader stFormHeader;
-	TstObjectHeader stObjectHeader;
+	TstObjectHeader *stObjectHeader;
 };
 
 //---------------------------------------------------------------------------
@@ -230,6 +233,7 @@ __published:	// IDE-managed Components
 	TcxTextEdit *edData;
 	TButton *btCtrl;
 	TRadioGroup *rdOpCodeNo;
+	TButton *btForm;
 	void __fastcall btStartClick(TObject *Sender);
 	void __fastcall btRequestClick(TObject *Sender);
 	void __fastcall edClientPortKeyPress(TObject *Sender, System::WideChar &Key);
@@ -237,6 +241,7 @@ __published:	// IDE-managed Components
           TIdSocketHandle *ABinding);
 	void __fastcall btCtrlClick(TObject *Sender);
 	void __fastcall edDataKeyPress(TObject *Sender, System::WideChar &Key);
+	void __fastcall btFormClick(TObject *Sender);
 private:	// User declarations
 	UnicodeString  sHostIP;
 	unsigned short usHostPort;

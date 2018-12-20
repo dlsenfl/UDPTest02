@@ -76,8 +76,7 @@ __fastcall TForm2::TForm2(TComponent* Owner)
 
 
 void __fastcall TForm2::btStartClick(TObject *Sender)
-{
-	if(!IdUDPServer1->Active){
+{	if(!IdUDPServer1->Active){
 
 		sHostIP    	 = edHostIP->Text;                                       // 데이터를 전달받을 서버Ip
 		usHostPort   = StrToInt(edHostPort->Text);                           // 데이터를 전달받을 서버Port
@@ -171,7 +170,7 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 {
 	BYTE byBuf[1024];
 	ZeroMemory(byBuf, sizeof(byBuf));
-	BytesToRaw(AData, byBuf, AData.Length);     // AData를 AData.Length 길이만큼 byBuf에 입력.
+	BytesToRaw(AData, byBuf, sizeof(byBuf));     // AData를 AData.Length 길이만큼 byBuf에 입력.
 	UnicodeString sTemp;
 
 	TstHeader stHeader;
@@ -192,6 +191,8 @@ void __fastcall TForm2::IdUDPServer1UDPRead(TIdUDPListenerThread *AThread, const
 
 //======= OpCode에따른 데이터 처리=======
 	if(stHeader.byOpCode == 0x01){
+//		for(int i=0; i<AData/1024 +1; i++){
+//		}
 	}else if(stHeader.byOpCode == 0x02){
 	}else if(stHeader.byOpCode == 0x03){
 	}else if(stHeader.byOpCode == 0x04){
@@ -474,6 +475,64 @@ void __fastcall TForm2::edDataKeyPress(TObject *Sender, System::WideChar &Key)
 	if(Key == VK_RETURN){
 		btCtrlClick(NULL);
 	}
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TForm2::btFormClick(TObject *Sender)
+{
+	BYTE *byBuf = new BYTE();
+	TstHeader stHeader;
+	TstTail	  stTail;
+	int 	  iIndex;
+
+//	ZeroMemory(byBuf, sizeof(byBuf));
+	ZeroMemory(&stHeader, sizeof(stHeader));
+	ZeroMemory(&stTail, sizeof(stTail));
+
+	stHeader.bySTX1   = 0x10;
+	stHeader.bySTX2   = 0x02;
+	stHeader.byOpCode = 0x01;
+
+	TstData01 stData01;
+//	TStringList * pTemp;
+//	pTemp = new TStringList();
+	// ======= 폼헤더 초기화 =======
+//	ZeroMemory(stData01, sizeof(stData01));
+	stData01.stFormHeader.byFormNo 		 = 0x00;
+	stData01.stFormHeader.byAllFormCount = 0x01;
+	stData01.stFormHeader.byDisplayTime  = 0x02;
+	stData01.stFormHeader.byDisplayType  = 0x03;
+	stData01.stFormHeader.byBackColor 	 = 0x04;
+	stData01.stFormHeader.byObjectCount  = 0x01;
+
+	stData01.stObjectHeader; //= new TstObjectHeader();
+	stData01.stObjectHeader[0].byObjectKind = 0x00;
+	stData01.stObjectHeader[0].byObjectSize[0] = 0x12;
+	stData01.stObjectHeader[0].byObjectSize[1] = 0x12;
+	stData01.stObjectHeader[0].byBlinkOnOff = 0x00;
+	stData01.stObjectHeader[0].byXposition[0] = 0x01;
+	stData01.stObjectHeader[0].byXposition[1] = 0x01;
+	stData01.stObjectHeader[0].byYposition[0] = 0x02;
+	stData01.stObjectHeader[0].byYposition[1] = 0x02;
+	stData01.stObjectHeader[0].byStringBackCol = 0x03;
+	stData01.stObjectHeader[0].stObjectString.byFontColor = 0x03;
+	stData01.stObjectHeader[0].stObjectString.byFontSize  = 0x11;
+	stData01.stObjectHeader[0].stObjectString.byFontKind  = 0x20;
+	stData01.stObjectHeader[0].stObjectString.byFontBold  = 0x00;
+	stData01.stObjectHeader[0].stObjectString.byEtc		  = 0x00;
+	stData01.stObjectHeader[0].stObjectString.byString = "테스트입니다.테스트입니다.테스트입니다.테스트입니다.테스트입니다.";
+
+	stTail.byETX1	= 0x10;
+	stTail.byETX2	= 0x03;
+
+	CopyMemory(byBuf, &stHeader, sizeof(stHeader));
+	iIndex = sizeof(stHeader);
+	CopyMemory(byBuf+iIndex, &stData01, sizeof(stData01));
+	iIndex = sizeof(stData01);
+	CopyMemory(byBuf+iIndex, &stTail, 	 sizeof(stTail));
+	iIndex = sizeof(stTail);
+
+	IdUDPServer1->SendBuffer(sHostIP, usHostPort, RawToBytes(&stData01, sizeof(stData01)));
 }
 //---------------------------------------------------------------------------
 

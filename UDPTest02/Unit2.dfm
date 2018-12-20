@@ -155,6 +155,15 @@ object Form2: TForm2
       '07 '#47196#52972#49345#53468)
     TabOrder = 9
   end
+  object btForm: TButton
+    Left = 640
+    Top = 14
+    Width = 75
+    Height = 27
+    Caption = #54268' '#45936#51060#53552
+    TabOrder = 10
+    OnClick = btFormClick
+  end
   object IdUDPServer1: TIdUDPServer
     Bindings = <>
     DefaultPort = 0
